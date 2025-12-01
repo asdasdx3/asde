@@ -1,0 +1,1377 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+----------------------------------------------------------
+-- GUI PERTAMA (NEXT + COPY) - muncul langsung
+----------------------------------------------------------
+local introGui = Instance.new("ScreenGui", player.PlayerGui)
+introGui.Name = "IntroGUI"
+introGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+local introFrame = Instance.new("Frame", introGui)
+introFrame.Size = UDim2.new(0, 320, 0, 200)
+introFrame.Position = UDim2.new(0.5, -160, 0.5, -100)
+introFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+introFrame.BorderSizePixel = 0
+introFrame.ZIndex = 20
+
+local ic = Instance.new("UICorner", introFrame)
+ic.CornerRadius = UDim.new(0, 10)
+
+local introTitle = Instance.new("TextLabel", introFrame)
+introTitle.Size = UDim2.new(1, 0, 0, 40)
+introTitle.Position = UDim2.new(0, 0, 0, 10)
+introTitle.Text = "Script by Mozil"
+introTitle.BackgroundTransparency = 1
+introTitle.Font = Enum.Font.GothamBold
+introTitle.TextSize = 16
+introTitle.TextColor3 = Color3.fromRGB(0, 170, 255)
+introTitle.ZIndex = 21
+
+-- COPY DISCORD BUTTON
+local copyDiscordBtn = Instance.new("TextButton", introFrame)
+copyDiscordBtn.Size = UDim2.new(0, 280, 0, 35)
+copyDiscordBtn.Position = UDim2.new(0.1, 0, 0.35, 0)
+copyDiscordBtn.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+copyDiscordBtn.Text = "Copy Discord"
+copyDiscordBtn.TextColor3 = Color3.new(1,1,1)
+copyDiscordBtn.Font = Enum.Font.GothamBold
+copyDiscordBtn.TextSize = 14
+copyDiscordBtn.ZIndex = 21
+Instance.new("UICorner", copyDiscordBtn).CornerRadius = UDim.new(0, 8)
+
+copyDiscordBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://discord.gg/TkbhZSCx7A")
+    copyDiscordBtn.Text = "Copied Discord!"
+    task.wait(1)
+    copyDiscordBtn.Text = "Copy Discord"
+end)
+
+-- COPY COMMUNITY ROBLOX BUTTON
+local copyCommunityBtn = Instance.new("TextButton", introFrame)
+copyCommunityBtn.Size = UDim2.new(0, 280, 0, 35)
+copyCommunityBtn.Position = UDim2.new(0.1, 0, 0.55, 0)
+copyCommunityBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 0)
+copyCommunityBtn.Text = "Copy Community Roblox"
+copyCommunityBtn.TextColor3 = Color3.new(1,1,1)
+copyCommunityBtn.Font = Enum.Font.GothamBold
+copyCommunityBtn.TextSize = 14
+copyCommunityBtn.ZIndex = 21
+Instance.new("UICorner", copyCommunityBtn).CornerRadius = UDim.new(0, 8)
+
+copyCommunityBtn.MouseButton1Click:Connect(function()
+    setclipboard("https://www.roblox.com/share/g/1044363377")
+    copyCommunityBtn.Text = "Copied Community Roblox!"
+    task.wait(1)
+    copyCommunityBtn.Text = "Copy Community Roblox"
+end)
+
+-- NEXT BUTTON
+local nextBtn = Instance.new("TextButton", introFrame)
+nextBtn.Size = UDim2.new(0, 280, 0, 35)
+nextBtn.Position = UDim2.new(0.1, 0, 0.75, 0)
+nextBtn.BackgroundColor3 = Color3.fromRGB(0, 255, 120)
+nextBtn.Text = "NEXT"
+nextBtn.TextColor3 = Color3.new(1,1,1)
+nextBtn.Font = Enum.Font.GothamBold
+nextBtn.TextSize = 16
+nextBtn.ZIndex = 21
+Instance.new("UICorner", nextBtn).CornerRadius = UDim.new(0, 8)
+
+----------------------------------------------------------
+-- GUI LOADING SCREEN KECIL YANG BISA DRAG
+----------------------------------------------------------
+local loadingScreenGui = Instance.new("ScreenGui")
+loadingScreenGui.Name = "LoadingScreenGUI"
+loadingScreenGui.ResetOnSpawn = false
+
+-- Container utama yang bisa di-drag
+local loadingContainer = Instance.new("Frame")
+loadingContainer.Size = UDim2.new(0, 400, 0, 180)
+loadingContainer.Position = UDim2.new(0.3, 0, 0.2, 0)
+loadingContainer.BackgroundColor3 = Color3.fromRGB(30, 30, 45)
+loadingContainer.BorderSizePixel = 0
+loadingContainer.ZIndex = 30
+loadingContainer.Active = true
+loadingContainer.Draggable = true
+
+local containerCorner = Instance.new("UICorner")
+containerCorner.CornerRadius = UDim.new(0, 15)
+containerCorner.Parent = loadingContainer
+
+local containerStroke = Instance.new("UIStroke")
+containerStroke.Color = Color3.fromRGB(100, 100, 200)
+containerStroke.Thickness = 3
+containerStroke.Transparency = 0.3
+containerStroke.Parent = loadingContainer
+
+-- Header bar untuk drag
+local headerBar = Instance.new("Frame")
+headerBar.Size = UDim2.new(1, 0, 0, 30)
+headerBar.Position = UDim2.new(0, 0, 0, 0)
+headerBar.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+headerBar.BorderSizePixel = 0
+headerBar.ZIndex = 31
+
+local headerCorner = Instance.new("UICorner")
+headerCorner.CornerRadius = UDim.new(0, 15)
+headerCorner.Parent = headerBar
+
+local headerTitle = Instance.new("TextLabel")
+headerTitle.Size = UDim2.new(1, -40, 1, 0)
+headerTitle.Position = UDim2.new(0, 10, 0, 0)
+headerTitle.BackgroundTransparency = 1
+headerTitle.Text = "Loading..."
+headerTitle.Font = Enum.Font.GothamBold
+headerTitle.TextSize = 14
+headerTitle.TextColor3 = Color3.new(1, 1, 1)
+headerTitle.TextXAlignment = Enum.TextXAlignment.Left
+headerTitle.ZIndex = 32
+headerTitle.Parent = headerBar
+
+headerBar.Parent = loadingContainer
+
+-- Teks loading (diubah menjadi Auto Moreira)
+local loadingText = Instance.new("TextLabel")
+loadingText.Size = UDim2.new(1, -20, 0, 30)
+loadingText.Position = UDim2.new(0, 10, 0, 40)
+loadingText.BackgroundTransparency = 1
+loadingText.Text = "Auto Moreira"
+loadingText.Font = Enum.Font.GothamBold
+loadingText.TextSize = 14
+loadingText.TextColor3 = Color3.new(1, 1, 1)
+loadingText.TextWrapped = true
+loadingText.ZIndex = 31
+loadingText.Parent = loadingContainer
+
+-- Persentase loading
+local percentLabel = Instance.new("TextLabel")
+percentLabel.Size = UDim2.new(1, 0, 0, 25)
+percentLabel.Position = UDim2.new(0, 0, 0, 75)
+percentLabel.BackgroundTransparency = 1
+percentLabel.Text = "0%"
+percentLabel.Font = Enum.Font.GothamBlack
+percentLabel.TextSize = 18
+percentLabel.TextColor3 = Color3.new(1, 1, 1)
+percentLabel.ZIndex = 31
+percentLabel.Parent = loadingContainer
+
+-- Progress bar background
+local progressBackground = Instance.new("Frame")
+progressBackground.Size = UDim2.new(0.9, 0, 0, 20)
+progressBackground.Position = UDim2.new(0.05, 0, 0, 105)
+progressBackground.BackgroundColor3 = Color3.fromRGB(50, 50, 70)
+progressBackground.BorderSizePixel = 0
+progressBackground.ZIndex = 31
+progressBackground.Parent = loadingContainer
+
+local progressBackgroundCorner = Instance.new("UICorner")
+progressBackgroundCorner.CornerRadius = UDim.new(0, 10)
+progressBackgroundCorner.Parent = progressBackground
+
+-- Progress fill
+local progressFill = Instance.new("Frame")
+progressFill.Size = UDim2.new(0, 0, 1, 0)
+progressFill.BackgroundColor3 = Color3.fromRGB(0, 170, 255)
+progressFill.BorderSizePixel = 0
+progressFill.ZIndex = 32
+progressFill.Parent = progressBackground
+
+local progressFillCorner = Instance.new("UICorner")
+progressFillCorner.CornerRadius = UDim.new(0, 10)
+progressFillCorner.Parent = progressFill
+
+-- Gradient untuk progress fill
+local progressGradient = Instance.new("UIGradient")
+progressGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 50, 50)),
+    ColorSequenceKeypoint.new(0.5, Color3.fromRGB(255, 200, 50)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(50, 255, 50))
+})
+progressGradient.Parent = progressFill
+
+-- Teks loading dots
+local loadingDotsText = Instance.new("TextLabel")
+loadingDotsText.Size = UDim2.new(1, 0, 0, 20)
+loadingDotsText.Position = UDim2.new(0, 0, 0, 130)
+loadingDotsText.BackgroundTransparency = 1
+loadingDotsText.Text = "LOADING..."
+loadingDotsText.Font = Enum.Font.Gotham
+loadingDotsText.TextSize = 12
+loadingDotsText.TextColor3 = Color3.new(0.8, 0.8, 1)
+loadingDotsText.ZIndex = 31
+loadingDotsText.Parent = loadingContainer
+
+-- Tombol mini game di loading screen kecil
+local miniGameBtn = Instance.new("TextButton")
+miniGameBtn.Size = UDim2.new(0, 120, 0, 25)
+miniGameBtn.Position = UDim2.new(0.5, -60, 1, -30)
+miniGameBtn.BackgroundColor3 = Color3.fromRGB(120, 80, 220)
+miniGameBtn.Text = "Play Mini Games"
+miniGameBtn.TextColor3 = Color3.new(1, 1, 1)
+miniGameBtn.Font = Enum.Font.GothamBold
+miniGameBtn.TextSize = 11
+miniGameBtn.ZIndex = 31
+miniGameBtn.Visible = false
+
+local miniGameBtnCorner = Instance.new("UICorner")
+miniGameBtnCorner.CornerRadius = UDim.new(0, 8)
+miniGameBtnCorner.Parent = miniGameBtn
+
+miniGameBtn.Parent = loadingContainer
+
+----------------------------------------------------------
+-- AUTO MOREIRA GUI (muncul setelah loading complete)
+----------------------------------------------------------
+local autoMoreiraGui = Instance.new("ScreenGui")
+autoMoreiraGui.Name = "AutoMoreiraGUI"
+autoMoreiraGui.ResetOnSpawn = false
+
+local autoMoreiraFrame = Instance.new("Frame")
+autoMoreiraFrame.Size = UDim2.new(0, 350, 0, 250)
+autoMoreiraFrame.Position = UDim2.new(0.7, 0, 0.1, 0)
+autoMoreiraFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+autoMoreiraFrame.BorderSizePixel = 0
+autoMoreiraFrame.ZIndex = 25
+autoMoreiraFrame.Active = true
+autoMoreiraFrame.Draggable = true
+
+local autoCorner = Instance.new("UICorner")
+autoCorner.CornerRadius = UDim.new(0, 15)
+autoCorner.Parent = autoMoreiraFrame
+
+local autoStroke = Instance.new("UIStroke")
+autoStroke.Color = Color3.fromRGB(0, 170, 255)
+autoStroke.Thickness = 3
+autoStroke.Parent = autoMoreiraFrame
+
+-- Header Auto Moreira
+local autoHeader = Instance.new("Frame")
+autoHeader.Size = UDim2.new(1, 0, 0, 40)
+autoHeader.Position = UDim2.new(0, 0, 0, 0)
+autoHeader.BackgroundColor3 = Color3.fromRGB(0, 100, 200)
+autoHeader.BorderSizePixel = 0
+autoHeader.ZIndex = 26
+
+local autoHeaderCorner = Instance.new("UICorner")
+autoHeaderCorner.CornerRadius = UDim.new(0, 15)
+autoHeaderCorner.Parent = autoHeader
+
+local autoTitle = Instance.new("TextLabel")
+autoTitle.Size = UDim2.new(1, 0, 1, 0)
+autoTitle.Position = UDim2.new(0, 0, 0, 0)
+autoTitle.BackgroundTransparency = 1
+autoTitle.Text = "Auto Moreira"
+autoTitle.Font = Enum.Font.GothamBold
+autoTitle.TextSize = 18
+autoTitle.TextColor3 = Color3.new(1, 1, 1)
+autoTitle.ZIndex = 27
+autoTitle.Parent = autoHeader
+
+autoHeader.Parent = autoMoreiraFrame
+
+-- Status text
+local statusText = Instance.new("TextLabel")
+statusText.Size = UDim2.new(0.9, 0, 0, 40)
+statusText.Position = UDim2.new(0.05, 0, 0.2, 0)
+statusText.BackgroundTransparency = 1
+statusText.Text = "Status: Ready to Start"
+statusText.Font = Enum.Font.GothamBold
+statusText.TextSize = 14
+statusText.TextColor3 = Color3.new(1, 1, 1)
+statusText.ZIndex = 26
+statusText.Parent = autoMoreiraFrame
+
+-- Chance text
+local chanceText = Instance.new("TextLabel")
+chanceText.Size = UDim2.new(0.9, 0, 0, 30)
+chanceText.Position = UDim2.new(0.05, 0, 0.4, 0)
+chanceText.BackgroundTransparency = 1
+chanceText.Text = "Chance untuk orang masuk: 30%"
+chanceText.Font = Enum.Font.Gotham
+chanceText.TextSize = 12
+chanceText.TextColor3 = Color3.new(0.8, 0.8, 1)
+chanceText.ZIndex = 26
+chanceText.Parent = autoMoreiraFrame
+
+-- Timer text
+local timerText = Instance.new("TextLabel")
+timerText.Size = UDim2.new(0.9, 0, 0, 30)
+timerText.Position = UDim2.new(0.05, 0, 0.5, 0)
+timerText.BackgroundTransparency = 1
+timerText.Text = "Next cycle: 30s"
+timerText.Font = Enum.Font.Gotham
+timerText.TextSize = 12
+timerText.TextColor3 = Color3.new(1, 1, 1)
+timerText.ZIndex = 26
+timerText.Visible = false
+timerText.Parent = autoMoreiraFrame
+
+-- Start button
+local startBtn = Instance.new("TextButton")
+startBtn.Size = UDim2.new(0.8, 0, 0, 45)
+startBtn.Position = UDim2.new(0.1, 0, 0.7, 0)
+startBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+startBtn.Text = "START"
+startBtn.TextColor3 = Color3.new(1, 1, 1)
+startBtn.Font = Enum.Font.GothamBold
+startBtn.TextSize = 16
+startBtn.ZIndex = 26
+
+local startBtnCorner = Instance.new("UICorner")
+startBtnCorner.CornerRadius = UDim.new(0, 10)
+startBtnCorner.Parent = startBtn
+startBtn.Parent = autoMoreiraFrame
+
+----------------------------------------------------------
+-- MINI GAME SELECTOR
+----------------------------------------------------------
+local miniGameSelector = Instance.new("Frame")
+miniGameSelector.Size = UDim2.new(0, 320, 0, 300)
+miniGameSelector.Position = UDim2.new(0.5, -160, 0.5, -150)
+miniGameSelector.BackgroundColor3 = Color3.fromRGB(40, 40, 60)
+miniGameSelector.BackgroundTransparency = 0.1
+miniGameSelector.BorderSizePixel = 0
+miniGameSelector.ZIndex = 40
+miniGameSelector.Visible = false
+miniGameSelector.Active = true
+miniGameSelector.Draggable = true
+
+local selectorCorner = Instance.new("UICorner")
+selectorCorner.CornerRadius = UDim.new(0, 20)
+selectorCorner.Parent = miniGameSelector
+
+local selectorStroke = Instance.new("UIStroke")
+selectorStroke.Color = Color3.fromRGB(150, 150, 255)
+selectorStroke.Thickness = 3
+selectorStroke.Parent = miniGameSelector
+
+-- Title selector
+local selectorTitle = Instance.new("TextLabel")
+selectorTitle.Size = UDim2.new(1, 0, 0, 40)
+selectorTitle.Position = UDim2.new(0, 0, 0, 10)
+selectorTitle.BackgroundTransparency = 1
+selectorTitle.Text = "CHOOSE MINI GAME"
+selectorTitle.Font = Enum.Font.GothamBold
+selectorTitle.TextSize = 18
+selectorTitle.TextColor3 = Color3.new(1, 1, 1)
+selectorTitle.ZIndex = 41
+selectorTitle.Parent = miniGameSelector
+
+-- Tombol game 1-5
+local game1Btn = Instance.new("TextButton")
+game1Btn.Size = UDim2.new(0, 280, 0, 35)
+game1Btn.Position = UDim2.new(0.06, 0, 0.15, 0)
+game1Btn.BackgroundColor3 = Color3.fromRGB(120, 100, 220)
+game1Btn.Text = "Click The Buttons"
+game1Btn.TextColor3 = Color3.new(1, 1, 1)
+game1Btn.Font = Enum.Font.GothamBold
+game1Btn.TextSize = 14
+game1Btn.ZIndex = 41
+
+local game2Btn = Instance.new("TextButton")
+game2Btn.Size = UDim2.new(0, 280, 0, 35)
+game2Btn.Position = UDim2.new(0.06, 0, 0.3, 0)
+game2Btn.BackgroundColor3 = Color3.fromRGB(100, 200, 100)
+game2Btn.Text = "Memory Match Game"
+game2Btn.TextColor3 = Color3.new(1, 1, 1)
+game2Btn.Font = Enum.Font.GothamBold
+game2Btn.TextSize = 14
+game2Btn.ZIndex = 41
+
+local game3Btn = Instance.new("TextButton")
+game3Btn.Size = UDim2.new(0, 280, 0, 35)
+game3Btn.Position = UDim2.new(0.06, 0, 0.45, 0)
+game3Btn.BackgroundColor3 = Color3.fromRGB(200, 100, 100)
+game3Btn.Text = "Reaction Test"
+game3Btn.TextColor3 = Color3.new(1, 1, 1)
+game3Btn.Font = Enum.Font.GothamBold
+game3Btn.TextSize = 14
+game3Btn.ZIndex = 41
+
+local game4Btn = Instance.new("TextButton")
+game4Btn.Size = UDim2.new(0, 280, 0, 35)
+game4Btn.Position = UDim2.new(0.06, 0, 0.6, 0)
+game4Btn.BackgroundColor3 = Color3.fromRGB(200, 150, 50)
+game4Btn.Text = "Color Match Game"
+game4Btn.TextColor3 = Color3.new(1, 1, 1)
+game4Btn.Font = Enum.Font.GothamBold
+game4Btn.TextSize = 14
+game4Btn.ZIndex = 41
+
+local game5Btn = Instance.new("TextButton")
+game5Btn.Size = UDim2.new(0, 280, 0, 35)
+game5Btn.Position = UDim2.new(0.06, 0, 0.75, 0)
+game5Btn.BackgroundColor3 = Color3.fromRGB(180, 80, 200)
+game5Btn.Text = "Number Tap Challenge"
+game5Btn.TextColor3 = Color3.new(1, 1, 1)
+game5Btn.Font = Enum.Font.GothamBold
+game5Btn.TextSize = 14
+game5Btn.ZIndex = 41
+
+-- Add corners to all buttons
+for _, btn in pairs({game1Btn, game2Btn, game3Btn, game4Btn, game5Btn}) do
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(0, 8)
+    btnCorner.Parent = btn
+    btn.Parent = miniGameSelector
+end
+
+----------------------------------------------------------
+-- MINI GAME FRAMES DENGAN ISI LENGKAP
+----------------------------------------------------------
+local miniGameFrames = {}
+
+-- Frame 1: Click The Buttons
+miniGameFrames[1] = Instance.new("Frame")
+miniGameFrames[1].Size = UDim2.new(0, 400, 0, 250)
+miniGameFrames[1].Position = UDim2.new(0.5, -200, 0.5, -125)
+miniGameFrames[1].BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+miniGameFrames[1].BackgroundTransparency = 0.1
+miniGameFrames[1].BorderSizePixel = 0
+miniGameFrames[1].ZIndex = 40
+miniGameFrames[1].Visible = false
+miniGameFrames[1].Active = true
+miniGameFrames[1].Draggable = true
+
+local miniGameCorner1 = Instance.new("UICorner")
+miniGameCorner1.CornerRadius = UDim.new(0, 20)
+miniGameCorner1.Parent = miniGameFrames[1]
+
+local miniGameStroke1 = Instance.new("UIStroke")
+miniGameStroke1.Color = Color3.fromRGB(120, 100, 220)
+miniGameStroke1.Thickness = 3
+miniGameStroke1.Parent = miniGameFrames[1]
+
+-- Title game 1
+local game1Title = Instance.new("TextLabel")
+game1Title.Size = UDim2.new(1, 0, 0, 50)
+game1Title.Position = UDim2.new(0, 0, 0, 10)
+game1Title.BackgroundTransparency = 1
+game1Title.Text = "CLICK THE BUTTONS!"
+game1Title.Font = Enum.Font.GothamBold
+game1Title.TextSize = 20
+game1Title.TextColor3 = Color3.new(1, 1, 1)
+game1Title.ZIndex = 41
+game1Title.Parent = miniGameFrames[1]
+
+-- Score game 1
+local clickScoreLabel = Instance.new("TextLabel")
+clickScoreLabel.Size = UDim2.new(1, 0, 0, 30)
+clickScoreLabel.Position = UDim2.new(0, 0, 0, 60)
+clickScoreLabel.BackgroundTransparency = 1
+clickScoreLabel.Text = "Buttons Clicked: 0"
+clickScoreLabel.Font = Enum.Font.GothamBold
+clickScoreLabel.TextSize = 16
+clickScoreLabel.TextColor3 = Color3.new(1, 1, 1)
+clickScoreLabel.ZIndex = 41
+clickScoreLabel.Parent = miniGameFrames[1]
+
+-- Frame 2: Memory Game
+miniGameFrames[2] = Instance.new("Frame")
+miniGameFrames[2].Size = UDim2.new(0, 450, 0, 350)
+miniGameFrames[2].Position = UDim2.new(0.5, -225, 0.5, -175)
+miniGameFrames[2].BackgroundColor3 = Color3.fromRGB(35, 50, 35)
+miniGameFrames[2].BackgroundTransparency = 0.1
+miniGameFrames[2].BorderSizePixel = 0
+miniGameFrames[2].ZIndex = 40
+miniGameFrames[2].Visible = false
+miniGameFrames[2].Active = true
+miniGameFrames[2].Draggable = true
+
+local miniGameCorner2 = Instance.new("UICorner")
+miniGameCorner2.CornerRadius = UDim.new(0, 20)
+miniGameCorner2.Parent = miniGameFrames[2]
+
+local miniGameStroke2 = Instance.new("UIStroke")
+miniGameStroke2.Color = Color3.fromRGB(100, 220, 100)
+miniGameStroke2.Thickness = 3
+miniGameStroke2.Parent = miniGameFrames[2]
+
+-- Title game 2
+local game2Title = Instance.new("TextLabel")
+game2Title.Size = UDim2.new(1, 0, 0, 50)
+game2Title.Position = UDim2.new(0, 0, 0, 10)
+game2Title.BackgroundTransparency = 1
+game2Title.Text = "MEMORY MATCH GAME!"
+game2Title.Font = Enum.Font.GothamBold
+game2Title.TextSize = 20
+game2Title.TextColor3 = Color3.new(1, 1, 1)
+game2Title.ZIndex = 41
+game2Title.Parent = miniGameFrames[2]
+
+-- Score game 2
+local memoryScoreLabel = Instance.new("TextLabel")
+memoryScoreLabel.Size = UDim2.new(0.5, 0, 0, 30)
+memoryScoreLabel.Position = UDim2.new(0, 10, 0, 60)
+memoryScoreLabel.BackgroundTransparency = 1
+memoryScoreLabel.Text = "Score: 0"
+memoryScoreLabel.Font = Enum.Font.GothamBold
+memoryScoreLabel.TextSize = 16
+memoryScoreLabel.TextColor3 = Color3.new(1, 1, 1)
+memoryScoreLabel.ZIndex = 41
+memoryScoreLabel.Parent = miniGameFrames[2]
+
+-- Timer game 2
+local memoryTimerLabel = Instance.new("TextLabel")
+memoryTimerLabel.Size = UDim2.new(0.5, 0, 0, 30)
+memoryTimerLabel.Position = UDim2.new(0.5, -10, 0, 60)
+memoryTimerLabel.BackgroundTransparency = 1
+memoryTimerLabel.Text = "Time: 30s"
+memoryTimerLabel.Font = Enum.Font.GothamBold
+memoryTimerLabel.TextSize = 16
+memoryTimerLabel.TextColor3 = Color3.new(1, 1, 1)
+memoryTimerLabel.ZIndex = 41
+memoryTimerLabel.Parent = miniGameFrames[2]
+
+-- Frame 3: Reaction Test
+miniGameFrames[3] = Instance.new("Frame")
+miniGameFrames[3].Size = UDim2.new(0, 400, 0, 300)
+miniGameFrames[3].Position = UDim2.new(0.5, -200, 0.5, -150)
+miniGameFrames[3].BackgroundColor3 = Color3.fromRGB(50, 35, 35)
+miniGameFrames[3].BackgroundTransparency = 0.1
+miniGameFrames[3].BorderSizePixel = 0
+miniGameFrames[3].ZIndex = 40
+miniGameFrames[3].Visible = false
+miniGameFrames[3].Active = true
+miniGameFrames[3].Draggable = true
+
+local miniGameCorner3 = Instance.new("UICorner")
+miniGameCorner3.CornerRadius = UDim.new(0, 20)
+miniGameCorner3.Parent = miniGameFrames[3]
+
+local miniGameStroke3 = Instance.new("UIStroke")
+miniGameStroke3.Color = Color3.fromRGB(220, 100, 100)
+miniGameStroke3.Thickness = 3
+miniGameStroke3.Parent = miniGameFrames[3]
+
+-- Title game 3
+local game3Title = Instance.new("TextLabel")
+game3Title.Size = UDim2.new(1, 0, 0, 50)
+game3Title.Position = UDim2.new(0, 0, 0, 10)
+game3Title.BackgroundTransparency = 1
+game3Title.Text = "REACTION TEST!"
+game3Title.Font = Enum.Font.GothamBold
+game3Title.TextSize = 20
+game3Title.TextColor3 = Color3.new(1, 1, 1)
+game3Title.ZIndex = 41
+game3Title.Parent = miniGameFrames[3]
+
+-- Score game 3
+local reactionScoreLabel = Instance.new("TextLabel")
+reactionScoreLabel.Size = UDim2.new(0.5, 0, 0, 30)
+reactionScoreLabel.Position = UDim2.new(0, 10, 0, 60)
+reactionScoreLabel.BackgroundTransparency = 1
+reactionScoreLabel.Text = "Score: 0"
+reactionScoreLabel.Font = Enum.Font.GothamBold
+reactionScoreLabel.TextSize = 16
+reactionScoreLabel.TextColor3 = Color3.new(1, 1, 1)
+reactionScoreLabel.ZIndex = 41
+reactionScoreLabel.Parent = miniGameFrames[3]
+
+-- Timer game 3
+local reactionTimerLabel = Instance.new("TextLabel")
+reactionTimerLabel.Size = UDim2.new(0.5, 0, 0, 30)
+reactionTimerLabel.Position = UDim2.new(0.5, -10, 0, 60)
+reactionTimerLabel.BackgroundTransparency = 1
+reactionTimerLabel.Text = "Time: 20s"
+reactionTimerLabel.Font = Enum.Font.GothamBold
+reactionTimerLabel.TextSize = 16
+reactionTimerLabel.TextColor3 = Color3.new(1, 1, 1)
+reactionTimerLabel.ZIndex = 41
+reactionTimerLabel.Parent = miniGameFrames[3]
+
+-- Target button untuk game 3
+local reactionTarget = Instance.new("TextButton")
+reactionTarget.Size = UDim2.new(0, 80, 0, 80)
+reactionTarget.Position = UDim2.new(0.5, -40, 0.5, -40)
+reactionTarget.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+reactionTarget.Text = "CLICK!"
+reactionTarget.TextColor3 = Color3.new(1, 1, 1)
+reactionTarget.Font = Enum.Font.GothamBold
+reactionTarget.TextSize = 14
+reactionTarget.ZIndex = 41
+reactionTarget.Visible = false
+reactionTarget.AutoButtonColor = false
+
+local reactionTargetCorner = Instance.new("UICorner")
+reactionTargetCorner.CornerRadius = UDim.new(1, 0)
+reactionTargetCorner.Parent = reactionTarget
+
+local reactionTargetStroke = Instance.new("UIStroke")
+reactionTargetStroke.Color = Color3.new(1, 1, 1)
+reactionTargetStroke.Thickness = 3
+reactionTargetStroke.Parent = reactionTarget
+reactionTarget.Parent = miniGameFrames[3]
+
+-- Frame 4: Color Match
+miniGameFrames[4] = Instance.new("Frame")
+miniGameFrames[4].Size = UDim2.new(0, 400, 0, 350)
+miniGameFrames[4].Position = UDim2.new(0.5, -200, 0.5, -175)
+miniGameFrames[4].BackgroundColor3 = Color3.fromRGB(35, 35, 50)
+miniGameFrames[4].BackgroundTransparency = 0.1
+miniGameFrames[4].BorderSizePixel = 0
+miniGameFrames[4].ZIndex = 40
+miniGameFrames[4].Visible = false
+miniGameFrames[4].Active = true
+miniGameFrames[4].Draggable = true
+
+local miniGameCorner4 = Instance.new("UICorner")
+miniGameCorner4.CornerRadius = UDim.new(0, 20)
+miniGameCorner4.Parent = miniGameFrames[4]
+
+local miniGameStroke4 = Instance.new("UIStroke")
+miniGameStroke4.Color = Color3.fromRGB(200, 150, 50)
+miniGameStroke4.Thickness = 3
+miniGameStroke4.Parent = miniGameFrames[4]
+
+-- Title game 4
+local game4Title = Instance.new("TextLabel")
+game4Title.Size = UDim2.new(1, 0, 0, 50)
+game4Title.Position = UDim2.new(0, 0, 0, 10)
+game4Title.BackgroundTransparency = 1
+game4Title.Text = "COLOR MATCH GAME!"
+game4Title.Font = Enum.Font.GothamBold
+game4Title.TextSize = 20
+game4Title.TextColor3 = Color3.new(1, 1, 1)
+game4Title.ZIndex = 41
+game4Title.Parent = miniGameFrames[4]
+
+-- Score game 4
+local colorScoreLabel = Instance.new("TextLabel")
+colorScoreLabel.Size = UDim2.new(0.5, 0, 0, 30)
+colorScoreLabel.Position = UDim2.new(0, 10, 0, 60)
+colorScoreLabel.BackgroundTransparency = 1
+colorScoreLabel.Text = "Score: 0"
+colorScoreLabel.Font = Enum.Font.GothamBold
+colorScoreLabel.TextSize = 16
+colorScoreLabel.TextColor3 = Color3.new(1, 1, 1)
+colorScoreLabel.ZIndex = 41
+colorScoreLabel.Parent = miniGameFrames[4]
+
+-- Timer game 4
+local colorTimerLabel = Instance.new("TextLabel")
+colorTimerLabel.Size = UDim2.new(0.5, 0, 0, 30)
+colorTimerLabel.Position = UDim2.new(0.5, -10, 0, 60)
+colorTimerLabel.BackgroundTransparency = 1
+colorTimerLabel.Text = "Time: 25s"
+colorTimerLabel.Font = Enum.Font.GothamBold
+colorTimerLabel.TextSize = 16
+colorTimerLabel.TextColor3 = Color3.new(1, 1, 1)
+colorTimerLabel.ZIndex = 41
+colorTimerLabel.Parent = miniGameFrames[4]
+
+-- Target color display
+local targetColorDisplay = Instance.new("Frame")
+targetColorDisplay.Size = UDim2.new(0, 100, 0, 50)
+targetColorDisplay.Position = UDim2.new(0.5, -50, 0, 100)
+targetColorDisplay.BackgroundColor3 = Color3.new(1, 0, 0)
+targetColorDisplay.BorderSizePixel = 0
+targetColorDisplay.ZIndex = 41
+
+local targetColorCorner = Instance.new("UICorner")
+targetColorCorner.CornerRadius = UDim.new(0, 10)
+targetColorCorner.Parent = targetColorDisplay
+
+local targetColorStroke = Instance.new("UIStroke")
+targetColorStroke.Color = Color3.new(1, 1, 1)
+targetColorStroke.Thickness = 3
+targetColorStroke.Parent = targetColorDisplay
+targetColorDisplay.Parent = miniGameFrames[4]
+
+-- Color buttons container
+local colorButtonsContainer = Instance.new("Frame")
+colorButtonsContainer.Size = UDim2.new(0.9, 0, 0, 150)
+colorButtonsContainer.Position = UDim2.new(0.05, 0, 0, 160)
+colorButtonsContainer.BackgroundTransparency = 1
+colorButtonsContainer.ZIndex = 41
+colorButtonsContainer.Parent = miniGameFrames[4]
+
+-- Instruction text
+local colorInstruction = Instance.new("TextLabel")
+colorInstruction.Size = UDim2.new(1, 0, 0, 30)
+colorInstruction.Position = UDim2.new(0, 0, 0, 120)
+colorInstruction.BackgroundTransparency = 1
+colorInstruction.Text = "Click the button that matches the color above!"
+colorInstruction.Font = Enum.Font.Gotham
+colorInstruction.TextSize = 14
+colorInstruction.TextColor3 = Color3.new(1, 1, 1)
+colorInstruction.ZIndex = 41
+colorInstruction.Parent = miniGameFrames[4]
+
+-- Frame 5: Number Tap
+miniGameFrames[5] = Instance.new("Frame")
+miniGameFrames[5].Size = UDim2.new(0, 400, 0, 300)
+miniGameFrames[5].Position = UDim2.new(0.5, -200, 0.5, -150)
+miniGameFrames[5].BackgroundColor3 = Color3.fromRGB(50, 35, 50)
+miniGameFrames[5].BackgroundTransparency = 0.1
+miniGameFrames[5].BorderSizePixel = 0
+miniGameFrames[5].ZIndex = 40
+miniGameFrames[5].Visible = false
+miniGameFrames[5].Active = true
+miniGameFrames[5].Draggable = true
+
+local miniGameCorner5 = Instance.new("UICorner")
+miniGameCorner5.CornerRadius = UDim.new(0, 20)
+miniGameCorner5.Parent = miniGameFrames[5]
+
+local miniGameStroke5 = Instance.new("UIStroke")
+miniGameStroke5.Color = Color3.fromRGB(180, 80, 200)
+miniGameStroke5.Thickness = 3
+miniGameStroke5.Parent = miniGameFrames[5]
+
+-- Title mini game 5
+local game5Title = Instance.new("TextLabel")
+game5Title.Size = UDim2.new(1, 0, 0, 50)
+game5Title.Position = UDim2.new(0, 0, 0, 10)
+game5Title.BackgroundTransparency = 1
+game5Title.Text = "NUMBER TAP CHALLENGE!"
+game5Title.Font = Enum.Font.GothamBold
+game5Title.TextSize = 20
+game5Title.TextColor3 = Color3.new(1, 1, 1)
+game5Title.ZIndex = 41
+game5Title.Parent = miniGameFrames[5]
+
+-- Score display untuk game 5
+local numberScoreLabel = Instance.new("TextLabel")
+numberScoreLabel.Size = UDim2.new(0.5, 0, 0, 30)
+numberScoreLabel.Position = UDim2.new(0, 10, 0, 60)
+numberScoreLabel.BackgroundTransparency = 1
+numberScoreLabel.Text = "Score: 0"
+numberScoreLabel.Font = Enum.Font.GothamBold
+numberScoreLabel.TextSize = 16
+numberScoreLabel.TextColor3 = Color3.new(1, 1, 1)
+numberScoreLabel.ZIndex = 41
+numberScoreLabel.Parent = miniGameFrames[5]
+
+-- Timer display untuk game 5
+local numberTimerLabel = Instance.new("TextLabel")
+numberTimerLabel.Size = UDim2.new(0.5, 0, 0, 30)
+numberTimerLabel.Position = UDim2.new(0.5, -10, 0, 60)
+numberTimerLabel.BackgroundTransparency = 1
+numberTimerLabel.Text = "Time: 20s"
+numberTimerLabel.Font = Enum.Font.GothamBold
+numberTimerLabel.TextSize = 16
+numberTimerLabel.TextColor3 = Color3.new(1, 1, 1)
+numberTimerLabel.ZIndex = 41
+numberTimerLabel.Parent = miniGameFrames[5]
+
+-- Number display
+local numberDisplay = Instance.new("TextButton")
+numberDisplay.Size = UDim2.new(0, 120, 0, 120)
+numberDisplay.Position = UDim2.new(0.5, -60, 0.4, -60)
+numberDisplay.BackgroundColor3 = Color3.fromRGB(80, 40, 100)
+numberDisplay.Text = "1"
+numberDisplay.TextColor3 = Color3.new(1, 1, 1)
+numberDisplay.Font = Enum.Font.GothamBlack
+numberDisplay.TextSize = 40
+numberDisplay.ZIndex = 41
+numberDisplay.AutoButtonColor = false
+
+local numberDisplayCorner = Instance.new("UICorner")
+numberDisplayCorner.CornerRadius = UDim.new(0, 20)
+numberDisplayCorner.Parent = numberDisplay
+
+local numberDisplayStroke = Instance.new("UIStroke")
+numberDisplayStroke.Color = Color3.new(1, 1, 1)
+numberDisplayStroke.Thickness = 4
+numberDisplayStroke.Parent = numberDisplay
+numberDisplay.Parent = miniGameFrames[5]
+
+-- Add close buttons to all frames
+for i, frame in pairs(miniGameFrames) do
+    local closeBtn = Instance.new("TextButton")
+    closeBtn.Size = UDim2.new(0, 35, 0, 35)
+    closeBtn.Position = UDim2.new(1, -40, 0, 10)
+    closeBtn.BackgroundColor3 = Color3.fromRGB(220, 80, 80)
+    closeBtn.Text = "X"
+    closeBtn.TextColor3 = Color3.new(1, 1, 1)
+    closeBtn.Font = Enum.Font.GothamBold
+    closeBtn.TextSize = 18
+    closeBtn.ZIndex = 42
+    
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 17)
+    closeCorner.Parent = closeBtn
+    
+    local closeStroke = Instance.new("UIStroke")
+    closeStroke.Color = Color3.fromRGB(255, 120, 120)
+    closeStroke.Thickness = 2
+    closeStroke.Parent = closeBtn
+    
+    closeBtn.MouseButton1Click:Connect(function()
+        frame.Visible = false
+        -- Stop any running timers
+        if i == 3 then
+            reactionTimerRunning = false
+            reactionGameActive = false
+        elseif i == 5 then
+            numberTimerRunning = false
+            numberGameActive = false
+        end
+    end)
+    
+    closeBtn.Parent = frame
+end
+
+----------------------------------------------------------
+-- SISTEM MINI GAMES LENGKAP
+----------------------------------------------------------
+-- Mini Game 1: Click The Buttons
+local clickScore = 0
+local function createClickButton()
+    local clickBtn = Instance.new("TextButton")
+    clickBtn.Size = UDim2.new(0, 60, 0, 60)
+    clickBtn.Position = UDim2.new(
+        math.random(10, 90) / 100, -30,
+        math.random(30, 80) / 100, -30
+    )
+    
+    local colors = {
+        Color3.fromRGB(255, 100, 100),
+        Color3.fromRGB(100, 200, 255),
+        Color3.fromRGB(150, 255, 150),
+        Color3.fromRGB(255, 200, 100)
+    }
+    local randomColor = colors[math.random(1, #colors)]
+    clickBtn.BackgroundColor3 = randomColor
+    clickBtn.Text = "Click!"
+    clickBtn.TextColor3 = Color3.new(0, 0, 0)
+    clickBtn.Font = Enum.Font.GothamBold
+    clickBtn.TextSize = 12
+    clickBtn.ZIndex = 42
+    
+    local btnCorner = Instance.new("UICorner")
+    btnCorner.CornerRadius = UDim.new(1, 0)
+    btnCorner.Parent = clickBtn
+    
+    clickBtn.MouseButton1Click:Connect(function()
+        clickScore += 1
+        clickScoreLabel.Text = "Buttons Clicked: " .. clickScore
+        
+        local tweenInfo = TweenInfo.new(0.2, Enum.EasingStyle.Back, Enum.EasingDirection.In)
+        local tween = TweenService:Create(clickBtn, tweenInfo, {Size = UDim2.new(0, 0, 0, 0)})
+        tween:Play()
+        tween.Completed:Connect(function()
+            clickBtn:Destroy()
+            task.wait(0.5)
+            if miniGameFrames[1].Visible then
+                createClickButton()
+            end
+        end)
+    end)
+    
+    clickBtn.Parent = miniGameFrames[1]
+end
+
+local function startClickGame()
+    clickScore = 0
+    clickScoreLabel.Text = "Buttons Clicked: 0"
+    
+    for i = 1, 3 do
+        createClickButton()
+        task.wait(0.2)
+    end
+end
+
+-- Mini Game 2: Memory Match
+local memoryCards = {}
+local flippedCards = {}
+local canFlip = true
+local memoryScore = 0
+local memoryTimer = 30
+local memoryTimerRunning = false
+
+local function updateMemoryTimer()
+    while memoryTimerRunning and memoryTimer > 0 do
+        memoryTimer -= 1
+        memoryTimerLabel.Text = "Time: " .. memoryTimer .. "s"
+        task.wait(1)
+    end
+    
+    if memoryTimer <= 0 then
+        memoryTimerRunning = false
+        memoryTimerLabel.Text = "Time's up! Score: " .. memoryScore
+    end
+end
+
+local function createMemoryGame()
+    memoryScore = 0
+    memoryScoreLabel.Text = "Score: 0"
+    memoryTimer = 30
+    memoryTimerLabel.Text = "Time: 30s"
+    
+    -- Hapus kartu lama
+    for _, child in ipairs(miniGameFrames[2]:GetChildren()) do
+        if child:IsA("TextButton") and child.Name ~= "X" then
+            child:Destroy()
+        end
+    end
+    
+    memoryCards = {}
+    flippedCards = {}
+    canFlip = true
+    
+    -- Buat 6 pasang kartu
+    local symbols = {"A", "B", "C", "D", "E", "F"}
+    local cards = {}
+    
+    for i, symbol in ipairs(symbols) do
+        table.insert(cards, symbol)
+        table.insert(cards, symbol)
+    end
+    
+    -- Acak kartu
+    for i = #cards, 2, -1 do
+        local j = math.random(1, i)
+        cards[i], cards[j] = cards[j], cards[i]
+    end
+    
+    -- Buat kartu di layar
+    for i = 1, 12 do
+        local card = Instance.new("TextButton")
+        card.Size = UDim2.new(0, 60, 0, 80)
+        card.Position = UDim2.new(
+            ((i-1) % 4) * 0.22 + 0.05, 0,
+            math.floor((i-1) / 4) * 0.25 + 0.3, 0
+        )
+        card.BackgroundColor3 = Color3.fromRGB(70, 120, 200)
+        card.Text = "?"
+        card.TextColor3 = Color3.new(1, 1, 1)
+        card.Font = Enum.Font.GothamBold
+        card.TextSize = 20
+        card.ZIndex = 42
+        
+        local cardCorner = Instance.new("UICorner")
+        cardCorner.CornerRadius = UDim.new(0, 10)
+        cardCorner.Parent = card
+        
+        memoryCards[card] = {
+            symbol = cards[i],
+            flipped = false
+        }
+        
+        card.MouseButton1Click:Connect(function()
+            if not canFlip or memoryCards[card].flipped or #flippedCards >= 2 then
+                return
+            end
+            
+            if not memoryTimerRunning then
+                memoryTimerRunning = true
+                coroutine.wrap(updateMemoryTimer)()
+            end
+            
+            memoryCards[card].flipped = true
+            table.insert(flippedCards, card)
+            
+            card.Text = memoryCards[card].symbol
+            card.BackgroundColor3 = Color3.fromRGB(220, 220, 100)
+            
+            if #flippedCards == 2 then
+                canFlip = false
+                
+                local card1 = flippedCards[1]
+                local card2 = flippedCards[2]
+                
+                if memoryCards[card1].symbol == memoryCards[card2].symbol then
+                    memoryScore += 10
+                    memoryScoreLabel.Text = "Score: " .. memoryScore
+                    
+                    card1.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+                    card2.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+                    
+                    task.wait(0.5)
+                    card1:Destroy()
+                    card2:Destroy()
+                    flippedCards = {}
+                    canFlip = true
+                else
+                    task.wait(1)
+                    card1.Text = "?"
+                    card2.Text = "?"
+                    card1.BackgroundColor3 = Color3.fromRGB(70, 120, 200)
+                    card2.BackgroundColor3 = Color3.fromRGB(70, 120, 200)
+                    memoryCards[card1].flipped = false
+                    memoryCards[card2].flipped = false
+                    flippedCards = {}
+                    canFlip = true
+                end
+            end
+        end)
+        
+        card.Parent = miniGameFrames[2]
+    end
+end
+
+-- Mini Game 3: Reaction Test
+local reactionScore = 0
+local reactionTime = 20
+local reactionTimerRunning = false
+local reactionGameActive = false
+
+local function updateReactionTimer()
+    while reactionTimerRunning and reactionTime > 0 do
+        reactionTime -= 1
+        reactionTimerLabel.Text = "Time: " .. reactionTime .. "s"
+        task.wait(1)
+    end
+    
+    if reactionTime <= 0 then
+        reactionTimerRunning = false
+        reactionGameActive = false
+        reactionTarget.Visible = false
+        reactionTimerLabel.Text = "Time's up! Score: " .. reactionScore
+    end
+end
+
+local function spawnReactionTarget()
+    if not reactionGameActive then return end
+    
+    reactionTarget.Visible = true
+    reactionTarget.Position = UDim2.new(
+        math.random(20, 80) / 100, -40,
+        math.random(40, 80) / 100, -40
+    )
+    
+    local disappearTime = math.random(10, 20) / 10
+    task.wait(disappearTime)
+    
+    if reactionTarget.Visible and reactionGameActive then
+        reactionTarget.Visible = false
+        task.wait(math.random(5, 15) / 10)
+        if reactionGameActive then
+            spawnReactionTarget()
+        end
+    end
+end
+
+local function startReactionGame()
+    reactionScore = 0
+    reactionTime = 20
+    reactionScoreLabel.Text = "Score: 0"
+    reactionTimerLabel.Text = "Time: 20s"
+    reactionGameActive = true
+    reactionTimerRunning = true
+    
+    coroutine.wrap(updateReactionTimer)()
+    coroutine.wrap(spawnReactionTarget)()
+end
+
+reactionTarget.MouseButton1Click:Connect(function()
+    if reactionGameActive and reactionTarget.Visible then
+        reactionScore += 5
+        reactionScoreLabel.Text = "Score: " .. reactionScore
+        reactionTarget.Visible = false
+        task.wait(0.5)
+        if reactionGameActive then
+            spawnReactionTarget()
+        end
+    end
+end)
+
+-- Mini Game 4: Color Match
+local colorScore = 0
+local colorOptions = {}
+
+local function createColorButtons()
+    for _, child in ipairs(colorButtonsContainer:GetChildren()) do
+        child:Destroy()
+    end
+    
+    targetColorDisplay.BackgroundColor3 = Color3.fromRGB(
+        math.random(0, 255),
+        math.random(0, 255), 
+        math.random(0, 255)
+    )
+    
+    local correctIndex = math.random(1, 6)
+    
+    for i = 1, 6 do
+        local colorBtn = Instance.new("TextButton")
+        colorBtn.Size = UDim2.new(0, 50, 0, 50)
+        colorBtn.Position = UDim2.new(
+            ((i-1) % 3) * 0.33 + 0.05, 0,
+            math.floor((i-1) / 3) * 0.5, 0
+        )
+        
+        if i == correctIndex then
+            colorBtn.BackgroundColor3 = targetColorDisplay.BackgroundColor3
+        else
+            colorBtn.BackgroundColor3 = Color3.fromRGB(
+                math.random(0, 255),
+                math.random(0, 255),
+                math.random(0, 255)
+            )
+        end
+        
+        colorBtn.Text = ""
+        colorBtn.ZIndex = 42
+        
+        local btnCorner = Instance.new("UICorner")
+        btnCorner.CornerRadius = UDim.new(0, 8)
+        btnCorner.Parent = colorBtn
+        
+        colorBtn.MouseButton1Click:Connect(function()
+            if i == correctIndex then
+                colorScore += 10
+                colorScoreLabel.Text = "Score: " .. colorScore
+                colorBtn.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+                task.wait(0.5)
+                createColorButtons()
+            else
+                colorBtn.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+                task.wait(0.5)
+                createColorButtons()
+            end
+        end)
+        
+        colorBtn.Parent = colorButtonsContainer
+    end
+end
+
+local function startColorGame()
+    colorScore = 0
+    colorScoreLabel.Text = "Score: 0"
+    createColorButtons()
+end
+
+-- Mini Game 5: Number Tap
+local numberScore = 0
+local numberTime = 20
+local numberTimerRunning = false
+local numberGameActive = false
+local currentNumber = 1
+local targetNumber = 1
+
+local function updateNumberTimer()
+    while numberTimerRunning and numberTime > 0 do
+        numberTime -= 1
+        numberTimerLabel.Text = "Time: " .. numberTime .. "s"
+        task.wait(1)
+    end
+    
+    if numberTime <= 0 then
+        numberTimerRunning = false
+        numberGameActive = false
+        numberTimerLabel.Text = "Time's up! Score: " .. numberScore
+    end
+end
+
+local function generateNewNumber()
+    if not numberGameActive then return end
+    
+    currentNumber = math.random(1, 9)
+    targetNumber = math.random(1, 9)
+    
+    numberDisplay.Text = tostring(currentNumber)
+    numberDisplay.BackgroundColor3 = Color3.fromRGB(80, 40, 100)
+end
+
+local function startNumberGame()
+    numberScore = 0
+    numberTime = 20
+    numberScoreLabel.Text = "Score: 0"
+    numberTimerLabel.Text = "Time: 20s"
+    numberGameActive = true
+    numberTimerRunning = true
+    
+    coroutine.wrap(updateNumberTimer)()
+    generateNewNumber()
+end
+
+numberDisplay.MouseButton1Click:Connect(function()
+    if not numberGameActive then return end
+    
+    if currentNumber == targetNumber then
+        numberScore += 5
+        numberScoreLabel.Text = "Score: " .. numberScore
+        numberDisplay.BackgroundColor3 = Color3.fromRGB(100, 255, 100)
+        numberDisplay.Text = "✓"
+        task.wait(0.5)
+        generateNewNumber()
+    else
+        numberDisplay.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        numberDisplay.Text = "✗"
+        task.wait(0.5)
+        generateNewNumber()
+    end
+end)
+
+----------------------------------------------------------
+-- SISTEM LOADING DENGAN DELAY 5 DETIK PER 1%
+----------------------------------------------------------
+local function startLoading()
+    local currentPercent = 0
+    local dotStates = {"LOADING", "LOADING.", "LOADING..", "LOADING..."}
+    local dotIndex = 1
+    
+    -- Tampilkan tombol mini game setelah 50%
+    miniGameBtn.Visible = true
+    
+    -- Animasi titik loading
+    local dotsCoroutine = coroutine.create(function()
+        while currentPercent < 100 do
+            dotIndex = dotIndex + 1
+            if dotIndex > #dotStates then
+                dotIndex = 1
+            end
+            loadingDotsText.Text = dotStates[dotIndex]
+            task.wait(0.5)
+        end
+    end)
+    coroutine.resume(dotsCoroutine)
+    
+    -- Animasi warna persentase
+    local percentColorCoroutine = coroutine.create(function()
+        local hue = 0
+        while currentPercent < 100 do
+            hue = (hue + 0.02) % 1
+            percentLabel.TextColor3 = Color3.fromHSV(hue, 0.8, 1)
+            task.wait(0.1)
+        end
+    end)
+    coroutine.resume(percentColorCoroutine)
+    
+    -- Loading naik 1% setiap 5 detik
+    while currentPercent < 100 do
+        task.wait(5) -- Delay 5 detik untuk setiap 1%
+        currentPercent += 1
+        percentLabel.Text = currentPercent .. "%"
+        progressFill.Size = UDim2.new(currentPercent / 100, 0, 1, 0)
+    end
+    
+    -- Setelah mencapai 100%, delay 30 detik dengan teks "Complete"
+    loadingText.Text = "Complete!"
+    percentLabel.Text = "100%"
+    percentLabel.TextColor3 = Color3.fromRGB(0, 255, 0)
+    progressFill.Size = UDim2.new(1, 0, 1, 0)
+    loadingDotsText.Text = "COMPLETE"
+    miniGameBtn.Visible = false
+    
+    -- Delay 30 detik di sini
+    local countdown = 30
+    while countdown > 0 do
+        loadingDotsText.Text = "Complete! Closing in " .. countdown .. "s"
+        countdown -= 1
+        task.wait(1)
+    end
+    
+    loadingScreenGui:Destroy()
+    
+    -- Tampilkan Auto Moreira GUI setelah loading selesai
+    autoMoreiraGui.Parent = player.PlayerGui
+    autoMoreiraFrame.Parent = autoMoreiraGui
+end
+
+----------------------------------------------------------
+-- AUTO MOREIRA SYSTEM
+----------------------------------------------------------
+local autoMoreiraEnabled = false
+local autoMoreiraCooldown = 30
+
+local function startAutoMoreira()
+    if not autoMoreiraEnabled then return end
+    
+    statusText.Text = "Status: Active"
+    timerText.Visible = true
+    
+    local countdown = autoMoreiraCooldown
+    while autoMoreiraEnabled and countdown > 0 do
+        timerText.Text = "Next cycle: " .. countdown .. "s"
+        countdown -= 1
+        task.wait(1)
+    end
+    
+    if autoMoreiraEnabled then
+        -- Simulate chance calculation
+        local chance = math.random(1, 100)
+        if chance <= 30 then
+            statusText.Text = "Status: Success! Someone entered"
+            timerText.Text = "Chance triggered!"
+        else
+            statusText.Text = "Status: Failed - No one entered"
+            timerText.Text = "Better luck next time!"
+        end
+        
+        task.wait(3)
+        startAutoMoreira() -- Restart the cycle
+    end
+end
+
+startBtn.MouseButton1Click:Connect(function()
+    autoMoreiraEnabled = not autoMoreiraEnabled
+    
+    if autoMoreiraEnabled then
+        startBtn.BackgroundColor3 = Color3.fromRGB(255, 100, 100)
+        startBtn.Text = "STOP"
+        statusText.Text = "Status: Starting..."
+        startAutoMoreira()
+    else
+        startBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        startBtn.Text = "START"
+        statusText.Text = "Status: Stopped"
+        timerText.Visible = false
+    end
+end)
+
+----------------------------------------------------------
+-- EVENT HANDLERS
+----------------------------------------------------------
+-- Tombol mini game utama
+miniGameBtn.MouseButton1Click:Connect(function()
+    miniGameSelector.Visible = true
+    miniGameSelector.Parent = loadingScreenGui
+end)
+
+-- Tombol pilih game
+game1Btn.MouseButton1Click:Connect(function()
+    miniGameSelector.Visible = false
+    miniGameFrames[1].Visible = true
+    miniGameFrames[1].Parent = loadingScreenGui
+    startClickGame()
+end)
+
+game2Btn.MouseButton1Click:Connect(function()
+    miniGameSelector.Visible = false
+    miniGameFrames[2].Visible = true
+    miniGameFrames[2].Parent = loadingScreenGui
+    createMemoryGame()
+end)
+
+game3Btn.MouseButton1Click:Connect(function()
+    miniGameSelector.Visible = false
+    miniGameFrames[3].Visible = true
+    miniGameFrames[3].Parent = loadingScreenGui
+    startReactionGame()
+end)
+
+game4Btn.MouseButton1Click:Connect(function()
+    miniGameSelector.Visible = false
+    miniGameFrames[4].Visible = true
+    miniGameFrames[4].Parent = loadingScreenGui
+    startColorGame()
+end)
+
+game5Btn.MouseButton1Click:Connect(function()
+    miniGameSelector.Visible = false
+    miniGameFrames[5].Visible = true
+    miniGameFrames[5].Parent = loadingScreenGui
+    startNumberGame()
+end)
+
+-- Saat NEXT ditekan
+nextBtn.MouseButton1Click:Connect(function()
+    introGui:Destroy()
+    loadingScreenGui.Parent = player.PlayerGui
+    loadingContainer.Parent = loadingScreenGui
+    
+    -- Add all frames to loading screen
+    for _, frame in pairs(miniGameFrames) do
+        frame.Parent = loadingScreenGui
+    end
+    miniGameSelector.Parent = loadingScreenGui
+    
+    startLoading()
+end)
